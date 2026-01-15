@@ -50,9 +50,6 @@ struct IDEqual {
     if (a.type != b.type) {
       return false;
     }
-    if (a.file_name != b.file_name) {
-      return false;
-    }
     if (a.file_id != b.file_id) {
       return false;
     }

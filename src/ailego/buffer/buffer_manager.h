@@ -97,15 +97,6 @@ struct BufferID {
     buffer_id.file_name = file_name;
     buffer_id.pos.forward.column = column;
     buffer_id.pos.forward.row_group = row_group;
-    struct stat file_stat;
-    if (stat(file_name.c_str(), &file_stat) == 0) {
-      // file_stat.st_ino contains the inode number
-      // file_stat.st_dev contains the device ID
-      // Together they uniquely identify a file
-      buffer_id.file_id = file_stat.st_ino;
-      std::filesystem::path p(file_name);
-      buffer_id.mtime = getLastModifiedNs(p);
-    }
     return buffer_id;
   }
 
@@ -115,11 +106,6 @@ struct BufferID {
     buffer_id.type = TYPE::VECTOR;
     buffer_id.file_name = file_name;
     struct stat file_stat;
-    if (stat(file_name.c_str(), &file_stat) == 0) {
-      buffer_id.file_id = file_stat.st_ino;
-      std::filesystem::path p(file_name);
-      buffer_id.mtime = getLastModifiedNs(p);
-    }
     buffer_id.pos.vector.offset = offset;
     buffer_id.pos.vector.length = length;
     return buffer_id;

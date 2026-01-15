@@ -355,22 +355,14 @@ class BufferStorage : public IndexStorage {
 
   //! Initialize index file
   int init_index(const std::string &path) {
-    int error_code = mapping_.create(path, segment_meta_capacity_);
-    if (error_code != 0) {
-      return error_code;
-    }
-
     // Add index version
-    error_code = this->init_version_segment();
+    int error_code = this->init_version_segment();
     if (error_code != 0) {
       return error_code;
     }
 
     // Refresh mapping
     this->refresh_index(0);
-
-    // Close mapping
-    mapping_.close();
     return 0;
   }
 
@@ -419,14 +411,7 @@ class BufferStorage : public IndexStorage {
   }
 
  private:
-  // mmap
-  uint32_t segment_meta_capacity_{1024 * 1024};
-  // bool copy_on_write_{false};
-  // bool force_flush_{false};
-  // bool memory_locked_{false};
-  // bool memory_warmup_{false};
   bool index_dirty_{false};
-  mutable IndexMapping mapping_{};
   mutable std::mutex mapping_mutex_{};
 
   // buffer manager
