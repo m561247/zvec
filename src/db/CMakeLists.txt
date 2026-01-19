@@ -12,7 +12,7 @@ cc_directory(index)
 cc_directory(sqlengine)
 
 cc_library(
-  NAME zvec_db SHARED STATIC STRICT
+  NAME zvec_db STATIC STRICT
   SRCS 
     # collection.cc
     *.cc 
