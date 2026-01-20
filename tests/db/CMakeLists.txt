@@ -26,6 +26,7 @@ foreach(CC_SRCS ${ALL_TEST_SRCS})
   cc_gmock(
     NAME ${CC_TARGET} STRICT
     LIBS zvec_db
+    zvec_proto
     core_knn_flat
     core_knn_flat_sparse
     core_knn_hnsw
