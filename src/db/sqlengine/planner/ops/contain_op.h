@@ -17,7 +17,7 @@
 #include <memory>
 #include <arrow/api.h>
 #include <arrow/compute/api.h>
-#include "zvec/db/type.h"
+#include <zvec/db/type.h>
 
 
 namespace zvec::sqlengine {

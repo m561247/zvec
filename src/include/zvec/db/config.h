@@ -16,8 +16,8 @@
 #include <atomic>
 #include <cstdint>
 #include <memory>
-#include "zvec/ailego/pattern/singleton.h"
-#include "zvec/db/status.h"
+#include <zvec/ailego/pattern/singleton.h>
+#include <zvec/db/status.h>
 
 namespace zvec {
 

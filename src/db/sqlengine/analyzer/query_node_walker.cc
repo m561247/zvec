@@ -15,15 +15,15 @@
 #include "query_node_walker.h"
 #include <cstddef>
 #include <ailego/logger/logger.h>
+#include <zvec/ailego/pattern/expected.hpp>
 #include <zvec/ailego/utility/float_helper.h>
 #include <zvec/ailego/utility/string_helper.h>
+#include <zvec/db/index_params.h>
+#include <zvec/db/type.h>
 #include "db/common/constants.h"
 #include "db/index/common/type_helper.h"
 #include "db/sqlengine/analyzer/query_node.h"
 #include "db/sqlengine/common/util.h"
-#include "zvec/ailego/pattern/expected.hpp"
-#include "zvec/db/index_params.h"
-#include "zvec/db/type.h"
 #include "query_info_helper.h"
 
 namespace zvec::sqlengine {

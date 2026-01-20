@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "zvec/db/index_params.h"
 #include <sstream>
+#include <zvec/db/index_params.h>
 #include "type_helper.h"
 
 namespace zvec {

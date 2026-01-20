@@ -23,13 +23,13 @@
 #include <string>
 #include <ailego/logger/logger.h>
 #include <proto/zvec.pb.h>
+#include <zvec/ailego/pattern/expected.hpp>
 #include <zvec/ailego/utility/string_helper.h>
+#include <zvec/db/status.h>
 #include "db/common/file_helper.h"
 #include "db/common/typedef.h"
 #include "db/index/common/proto_converter.h"
 #include "db/index/common/type_helper.h"
-#include "zvec/ailego/pattern/expected.hpp"
-#include "zvec/db/status.h"
 
 namespace zvec {
 

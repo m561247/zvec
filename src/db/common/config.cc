@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "zvec/db/config.h"
 #include <iostream>
 #include <memory>
+#include <zvec/db/config.h>
+#include <zvec/db/status.h>
 #include "db/common/constants.h"
 #include "db/common/global_resource.h"
-#include "zvec/db/status.h"
 #include "cgroup_util.h"
 #include "global_resource.h"
 #include "glogger.h"

@@ -13,9 +13,9 @@
 // limitations under the License.
 #pragma once
 
+#include <zvec/db/index_params.h>
+#include <zvec/db/schema.h>
 #include "db/index/common/meta.h"
-#include "zvec/db/index_params.h"
-#include "zvec/db/schema.h"
 
 namespace zvec {
 

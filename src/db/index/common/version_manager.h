@@ -19,9 +19,9 @@
 #include <mutex>
 #include <unordered_map>
 #include <vector>
+#include <zvec/db/schema.h>
+#include <zvec/db/status.h>
 #include "db/index/common/meta.h"
-#include "zvec/db/schema.h"
-#include "zvec/db/status.h"
 
 namespace zvec {
 

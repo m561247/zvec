@@ -14,9 +14,9 @@
 
 #include "invert_search.h"
 #include <ailego/logger/logger.h>
+#include <zvec/db/type.h>
 #include "db/sqlengine/analyzer/query_node.h"
 #include "db/sqlengine/common/util.h"
-#include "zvec/db/type.h"
 
 namespace zvec::sqlengine {
 

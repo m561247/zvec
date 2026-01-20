@@ -18,7 +18,7 @@
 
 #include <ailego/io/file.h>
 #include <rocksdb/db.h>
-#include "zvec/db/status.h"
+#include <zvec/db/status.h>
 
 
 namespace zvec {

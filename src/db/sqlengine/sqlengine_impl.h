@@ -18,13 +18,13 @@
 #include <memory>
 #include <vector>
 #include <arrow/api.h>
+#include <zvec/db/doc.h>
+#include <zvec/db/schema.h>
 #include "analyzer/query_info.h"
 #include "common/group_by.h"
 #include "db/sqlengine/common/util.h"
 #include "db/sqlengine/parser/sql_info.h"
 #include "db/sqlengine/sqlengine.h"
-#include "zvec/db/doc.h"
-#include "zvec/db/schema.h"
 
 namespace zvec::sqlengine {
 

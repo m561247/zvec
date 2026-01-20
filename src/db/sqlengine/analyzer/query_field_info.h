@@ -16,7 +16,7 @@
 
 #include <memory>
 #include <string>
-#include "zvec/db/schema.h"
+#include <zvec/db/schema.h>
 
 namespace zvec::sqlengine {
 

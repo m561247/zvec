@@ -18,6 +18,8 @@
 #include <memory>
 #include <arrow/compute/api_vector.h>
 #include <arrow/type_fwd.h>
+#include <zvec/db/status.h>
+#include <zvec/db/type.h>
 #include "ailego/logger/logger.h"
 #include "db/common/constants.h"
 #include "db/common/file_helper.h"
@@ -28,8 +30,6 @@
 #include "db/index/common/index_filter.h"
 #include "db/index/common/meta.h"
 #include "db/index/storage/forward_writer.h"
-#include "zvec/db/status.h"
-#include "zvec/db/type.h"
 #include "roaring.hh"
 
 namespace zvec {

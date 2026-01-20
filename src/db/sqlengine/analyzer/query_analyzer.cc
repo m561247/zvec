@@ -15,7 +15,11 @@
 #include "query_analyzer.h"
 #include <cstddef>
 #include <ailego/logger/logger.h>
+#include <zvec/ailego/pattern/expected.hpp>
 #include <zvec/ailego/utility/string_helper.h>
+#include <zvec/db/config.h>
+#include <zvec/db/status.h>
+#include <zvec/db/type.h>
 #include "core/framework/index_meta.h"
 #include "db/common/constants.h"
 #include "db/common/error_code.h"
@@ -23,10 +27,6 @@
 #include "db/sqlengine/analyzer/query_node.h"
 #include "db/sqlengine/common/util.h"
 #include "db/sqlengine/parser/select_info.h"
-#include "zvec/ailego/pattern/expected.hpp"
-#include "zvec/db/config.h"
-#include "zvec/db/status.h"
-#include "zvec/db/type.h"
 #include "query_info_helper.h"
 #include "simple_rewriter.h"
 

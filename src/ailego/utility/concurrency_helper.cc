@@ -16,7 +16,7 @@
 #include <fstream>
 #include <iostream>
 #include <thread>
-#include "zvec/ailego/utility/string_helper.h"
+#include <zvec/ailego/utility/string_helper.h>
 #include "file_helper.h"
 
 namespace zvec {

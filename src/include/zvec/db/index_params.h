@@ -16,8 +16,8 @@
 #include <memory>
 #include <sstream>
 #include <string>
-#include "zvec/core/interface/constants.h"
-#include "zvec/db/type.h"
+#include <zvec/core/interface/constants.h>
+#include <zvec/db/type.h>
 
 namespace zvec {
 

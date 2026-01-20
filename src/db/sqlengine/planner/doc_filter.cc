@@ -16,9 +16,9 @@
 #include <optional>
 #include <arrow/acero/exec_plan.h>
 #include <arrow/table.h>
+#include <zvec/db/config.h>
 #include "ailego/logger/logger.h"
 #include "db/sqlengine/planner/invert_search.h"
-#include "zvec/db/config.h"
 
 namespace zvec::sqlengine {
 

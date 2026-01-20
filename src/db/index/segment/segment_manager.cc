@@ -18,8 +18,8 @@
 #include <future>
 #include <thread>
 #include <vector>
+#include <zvec/db/status.h>
 #include "db/common/typedef.h"
-#include "zvec/db/status.h"
 
 namespace zvec {
 

@@ -19,7 +19,7 @@
 #include <arrow/api.h>
 #include <arrow/io/api.h>
 #include <parquet/arrow/writer.h>
-#include "zvec/db/type.h"
+#include <zvec/db/type.h>
 
 namespace zvec {
 

@@ -20,6 +20,9 @@
 #include <ailego/parallel/thread_pool.h>
 #include <arrow/acero/api.h>
 #include <arrow/compute/api.h>
+#include <zvec/db/schema.h>
+#include <zvec/db/status.h>
+#include <zvec/db/type.h>
 #include "db/common/constants.h"
 #include "db/common/global_resource.h"
 #include "db/sqlengine/analyzer/query_info.h"
@@ -32,9 +35,6 @@
 #include "db/sqlengine/planner/plan_info.h"
 #include "db/sqlengine/planner/segment_node.h"
 #include "db/sqlengine/planner/vector_recall_node.h"
-#include "zvec/db/schema.h"
-#include "zvec/db/status.h"
-#include "zvec/db/type.h"
 #include "optimizer.h"
 
 namespace zvec::sqlengine {

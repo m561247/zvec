@@ -17,9 +17,9 @@
 #include <ailego/io/file.h>
 #include <ailego/logger/logger.h>
 #include <gflags/gflags.h>
+#include <zvec/db/status.h>
 #include "ailego/pattern/factory.h"
 #include "db/common/constants.h"
-#include "zvec/db/status.h"
 #include "error_code.h"
 
 namespace zvec {

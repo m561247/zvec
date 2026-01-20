@@ -31,6 +31,12 @@
 #include <arrow/ipc/reader.h>
 #include <arrow/table.h>
 #include <arrow/util/iterator.h>
+#include <zvec/db/config.h>
+#include <zvec/db/doc.h>
+#include <zvec/db/index_params.h>
+#include <zvec/db/schema.h>
+#include <zvec/db/status.h>
+#include <zvec/db/type.h>
 #include "db/common/constants.h"
 #include "db/common/file_helper.h"
 #include "db/common/global_resource.h"
@@ -47,12 +53,6 @@
 #include "db/index/storage/mmap_forward_store.h"
 #include "db/index/storage/store_helper.h"
 #include "db/index/storage/wal/wal_file.h"
-#include "zvec/db/config.h"
-#include "zvec/db/doc.h"
-#include "zvec/db/index_params.h"
-#include "zvec/db/schema.h"
-#include "zvec/db/status.h"
-#include "zvec/db/type.h"
 #include "column_merging_reader.h"
 #include "sql_expr_parser.h"
 

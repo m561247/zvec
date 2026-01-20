@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "zvec/db/status.h"
 #include <unordered_map>
 #include <zvec/ailego/utility/string_helper.h>
+#include <zvec/db/status.h>
 
 namespace zvec {
 

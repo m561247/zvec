@@ -15,9 +15,9 @@
 
 #include <cstdint>
 #include <unordered_map>
-#include "zvec/db/index_params.h"
-#include "zvec/db/status.h"
-#include "zvec/db/type.h"
+#include <zvec/db/index_params.h>
+#include <zvec/db/status.h>
+#include <zvec/db/type.h>
 
 namespace zvec {
 

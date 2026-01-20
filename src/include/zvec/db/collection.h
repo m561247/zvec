@@ -16,10 +16,10 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "zvec/db/doc.h"
-#include "zvec/db/options.h"
-#include "zvec/db/stats.h"
-#include "zvec/db/status.h"
+#include <zvec/db/doc.h>
+#include <zvec/db/options.h>
+#include <zvec/db/stats.h>
+#include <zvec/db/status.h>
 
 namespace zvec {
 

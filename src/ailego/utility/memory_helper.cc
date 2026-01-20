@@ -18,7 +18,7 @@
 #include <fstream>
 #include <iostream>
 #include <thread>
-#include "zvec/ailego/utility/string_helper.h"
+#include <zvec/ailego/utility/string_helper.h>
 #include "file_helper.h"
 
 #if defined(_WIN64) || defined(_WIN32)

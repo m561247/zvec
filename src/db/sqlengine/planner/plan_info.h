@@ -19,7 +19,7 @@
 #include <string>
 #include <arrow/acero/api.h>
 #include <arrow/acero/exec_plan.h>
-#include "zvec/db/status.h"
+#include <zvec/db/status.h>
 
 namespace zvec::sqlengine {
 

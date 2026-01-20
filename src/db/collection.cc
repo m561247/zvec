@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "zvec/db/collection.h"
 #include <atomic>
 #include <cstdint>
 #include <memory>
@@ -26,6 +25,7 @@
 #include <ailego/utility/file_helper.h>
 #include <zvec/ailego/pattern/expected.hpp>
 #include <zvec/ailego/utility/string_helper.h>
+#include <zvec/db/collection.h>
 #include <zvec/db/doc.h>
 #include <zvec/db/options.h>
 #include <zvec/db/schema.h>

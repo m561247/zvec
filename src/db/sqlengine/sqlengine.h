@@ -14,10 +14,10 @@
 
 #pragma once
 
+#include <zvec/db/doc.h>
+#include <zvec/db/status.h>
 #include "db/common/profiler.h"
 #include "db/index/segment/segment.h"
-#include "zvec/db/doc.h"
-#include "zvec/db/status.h"
 
 namespace zvec::sqlengine {
 

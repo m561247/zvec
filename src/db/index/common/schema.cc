@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "zvec/db/schema.h"
 #include <regex>
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
+#include <zvec/db/index_params.h>
+#include <zvec/db/schema.h>
+#include <zvec/db/status.h>
+#include <zvec/db/type.h>
 #include "db/common/constants.h"
 #include "db/common/typedef.h"
 #include "db/common/utils.h"
 #include "db/index/common/type_helper.h"
-#include "zvec/db/index_params.h"
-#include "zvec/db/status.h"
-#include "zvec/db/type.h"
 
 namespace zvec {
 
