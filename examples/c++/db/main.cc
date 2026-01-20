@@ -2,9 +2,9 @@
 #include <string>
 #include <vector>
 #include <zvec/db/collection.h>
+#include <zvec/db/doc.h>
+#include <zvec/db/schema.h>
 #include <zvec/db/status.h>
-#include "zvec/db/doc.h"
-#include "zvec/db/schema.h"
 
 using namespace zvec;
 
