@@ -18,7 +18,7 @@
 #include <future>
 #include <ailego/container/vector.h>
 #include <gtest/gtest.h>
-#include "framework/index_framework.h"
+#include "zvec/core/framework/index_framework.h"
 
 #if defined(__GNUC__) || defined(__GNUG__)
 #pragma GCC diagnostic push

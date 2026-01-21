@@ -14,7 +14,7 @@
 #pragma once
 
 #include <ailego/container/params.h>
-#include "framework/index_searcher.h"
+#include <zvec/core/framework/index_searcher.h>
 #include "flat_distance_matrix.h"
 #include "flat_index_format.h"
 

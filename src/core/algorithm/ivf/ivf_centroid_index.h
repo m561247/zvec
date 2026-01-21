@@ -14,7 +14,7 @@
 #pragma once
 
 #include <ailego/container/params.h>
-#include "framework/index_framework.h"
+#include <zvec/core/framework/index_framework.h>
 #include "ivf_params.h"
 #include "ivf_utility.h"
 

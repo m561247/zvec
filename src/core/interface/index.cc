@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "index.h"
-#include "framework/index_error.h"
-#include "framework/index_storage.h"
+#include <zvec/core/interface/index.h>
+#include <zvec/core/framework/index_error.h>
+#include <zvec/core/framework/index_storage.h>
 
 namespace zvec::core_interface {
 

@@ -20,9 +20,9 @@
 #include <ailego/container/vector.h>
 #include <ailego/math/distance.h>
 #include <gtest/gtest.h>
-#include "framework/index_builder.h"
-#include "framework/index_factory.h"
-#include "framework/index_meta.h"
+#include "zvec/core/framework/index_builder.h"
+#include "zvec/core/framework/index_factory.h"
+#include "zvec/core/framework/index_meta.h"
 #include "hnsw_params.h"
 
 using namespace std;

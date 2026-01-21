@@ -20,7 +20,7 @@
 #include <ailego/container/vector.h>
 #include <ailego/math/distance.h>
 #include <gtest/gtest.h>
-#include "framework/index_framework.h"
+#include "zvec/core/framework/index_framework.h"
 #include "hnsw_sparse_params.h"
 
 #if defined(__GNUC__) || defined(__GNUG__)

@@ -14,7 +14,7 @@
 #pragma once
 
 #include <ailego/parallel/thread_pool.h>
-#include "framework/index_builder.h"
+#include <zvec/core/framework/index_builder.h>
 #include "hnsw_algorithm.h"
 #include "hnsw_builder_entity.h"
 

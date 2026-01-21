@@ -14,7 +14,7 @@
 
 #include <iostream>
 #include <set>
-#include "framework/index_meta.h"
+#include "zvec/core/framework/index_meta.h"
 #include "gflags/gflags.h"
 #include "index_meta_helper.h"
 #include "txt_input_reader.h"

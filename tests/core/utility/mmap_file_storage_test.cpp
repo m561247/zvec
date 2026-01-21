@@ -15,8 +15,8 @@
 #include <fstream>
 #include <iostream>
 #include <ailego/buffer/buffer_manager.h>
-#include <framework/index_factory.h>
-#include <framework/index_helper.h>
+#include <zvec/core/framework/index_factory.h>
+#include <zvec/core/framework/index_helper.h>
 #include <gtest/gtest.h>
 
 using namespace zvec;

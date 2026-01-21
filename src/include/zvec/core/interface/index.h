@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
 #pragma once
 #include <cmath>
 #include <cstdint>
@@ -21,18 +22,18 @@
 #include <variant>
 #include <vector>
 #include <magic_enum/magic_enum.hpp>
-#include "core/framework/index_context.h"
-#include "core/framework/index_converter.h"
-#include "core/framework/index_factory.h"
-#include "core/framework/index_filter.h"
-#include "core/framework/index_holder.h"
-#include "core/framework/index_meta.h"
-#include "core/framework/index_metric.h"
-#include "core/framework/index_reducer.h"
-#include "core/framework/index_reformer.h"
-#include "core/framework/index_searcher.h"
-#include "core/framework/index_storage.h"
-#include "core/mixed_reducer/mixed_reducer_params.h"
+#include <zvec/core/framework/index_context.h>
+#include <zvec/core/framework/index_converter.h>
+#include <zvec/core/framework/index_factory.h>
+#include <zvec/core/framework/index_filter.h>
+#include <zvec/core/framework/index_holder.h>
+#include <zvec/core/framework/index_meta.h>
+#include <zvec/core/framework/index_metric.h>
+#include <zvec/core/framework/index_reducer.h>
+#include <zvec/core/framework/index_reformer.h>
+#include <zvec/core/framework/index_searcher.h>
+#include <zvec/core/framework/index_storage.h>
+#include <zvec/core/mixed_reducer/mixed_reducer_params.h>
 #include "index_param.h"
 #include "index_param_builders.h"
 

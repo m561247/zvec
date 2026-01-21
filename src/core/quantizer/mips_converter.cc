@@ -14,8 +14,8 @@
 #include <ailego/math/norm2_matrix.h>
 #include <ailego/utility/time_helper.h>
 #include <ailego/utility/type_helper.h>
-#include "framework/index_factory.h"
-#include "quantizer_params.h"
+#include <zvec/core/framework/index_factory.h>
+#include <zvec/core/quantizer/quantizer_params.h>
 
 namespace zvec {
 namespace core {

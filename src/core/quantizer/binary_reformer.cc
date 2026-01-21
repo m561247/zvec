@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #include <ailego/algorithm/binary_quantizer.h>
-#include "framework/index_factory.h"
-#include "quantizer_params.h"
+#include <zvec/core/framework/index_factory.h>
+#include <zvec/core/quantizer/quantizer_params.h>
 
 namespace zvec {
 namespace core {

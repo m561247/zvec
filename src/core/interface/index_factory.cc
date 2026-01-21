@@ -15,11 +15,11 @@
 // Created by wangjianning.wjn on 8/28/25.
 //
 
-#include "core/framework/index_factory.h"
+#include <zvec/core/framework/index_factory.h>
 #include "ailego/container/params.h"
-#include "core/framework/index_meta.h"
-#include "utils/utils.h"
-#include "index_factory.h"
+#include <zvec/core/framework/index_meta.h>
+#include <zvec/core/interface/index_factory.h>
+#include <zvec/core/interface/utils/utils.h>
 
 namespace zvec::core_interface {
 

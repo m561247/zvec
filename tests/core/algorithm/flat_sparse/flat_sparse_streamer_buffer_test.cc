@@ -19,8 +19,8 @@
 #include <ailego/utility/math_helper.h>
 #include <ailego/utility/memory_helper.h>
 #include <algorithm/flat_sparse/flat_sparse_utility.h>
-#include <framework/index_framework.h>
-#include <framework/index_streamer.h>
+#include <zvec/core/framework/index_framework.h>
+#include <zvec/core/framework/index_streamer.h>
 #include <gtest/gtest.h>
 
 using namespace std;
