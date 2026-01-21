@@ -13,7 +13,7 @@
 // limitations under the License.
 #include "ivf_searcher.h"
 #include <ailego/utility/time_helper.h>
-#include <framework/index_segment_storage.h>
+#include <zvec/core/framework/index_segment_storage.h>
 #include "ivf_centroid_index.h"
 #include "ivf_index_provider.h"
 #include "ivf_params.h"

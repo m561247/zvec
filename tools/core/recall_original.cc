@@ -23,9 +23,9 @@
 #include <ailego/parallel/thread_pool.h>
 #include <ailego/utility/time_helper.h>
 #include <zvec/ailego/utility/string_helper.h>
-#include "framework/index_plugin.h"
-#include "interface/index_factory.h"
-#include "interface/index_param.h"
+#include "zvec/core/framework/index_plugin.h"
+#include "zvec/core/interface/index_factory.h"
+#include "zvec/core/interface/index_param.h"
 #include "filter_result_cache.h"
 #include "flow.h"
 #include "txt_input_reader.h"

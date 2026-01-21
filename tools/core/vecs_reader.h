@@ -16,7 +16,7 @@
 
 #include <iostream>
 #include <ailego/io/mmap_file.h>
-#include "framework/index_meta.h"
+#include "zvec/core/framework/index_meta.h"
 #include "vecs_common.h"
 
 namespace zvec {

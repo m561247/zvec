@@ -18,7 +18,7 @@
 #include <memory>
 #include <string>
 #include "algorithm/flat/flat_utility.h"
-#include "interface/index.h"
+#include <zvec/core/interface/index.h>
 
 namespace zvec::core_interface {
 

@@ -1,4 +1,4 @@
-#include "index_param.h"
+#include <zvec/core/interface/index_param.h>
 #include <type_traits>
 #include <ailego/logger/logger.h>
 

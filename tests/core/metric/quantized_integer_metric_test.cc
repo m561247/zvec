@@ -18,12 +18,12 @@
 #include <ailego/math/distance.h>
 #include <ailego/math/norm_matrix.h>
 #include <ailego/math/normalizer.h>
-#include <framework/index_factory.h>
-#include <framework/index_flow.h>
+#include <zvec/core/framework/index_factory.h>
+#include <zvec/core/framework/index_flow.h>
 #include <gtest/gtest.h>
 #include <zvec/ailego/utility/float_helper.h>
-#include "core/quantizer/quantizer_params.h"
-#include "framework/index_factory.h"
+#include "zvec/core/quantizer/quantizer_params.h"
+#include "zvec/core/framework/index_factory.h"
 
 
 using namespace zvec;

@@ -13,10 +13,10 @@
 // limitations under the License.
 #include <cerrno>
 #include <ailego/io/file.h>
-#include "framework/index_error.h"
-#include "framework/index_factory.h"
-#include "framework/index_format.h"
-#include "framework/index_packer.h"
+#include <zvec/core/framework/index_error.h>
+#include <zvec/core/framework/index_factory.h>
+#include <zvec/core/framework/index_format.h>
+#include <zvec/core/framework/index_packer.h>
 
 namespace zvec {
 namespace core {

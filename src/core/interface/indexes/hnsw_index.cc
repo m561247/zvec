@@ -16,7 +16,7 @@
 #include <string>
 #include "algorithm/hnsw/hnsw_params.h"
 #include "algorithm/hnsw_sparse/hnsw_sparse_params.h"
-#include "interface/index.h"
+#include <zvec/core/interface/index.h>
 
 namespace zvec::core_interface {
 

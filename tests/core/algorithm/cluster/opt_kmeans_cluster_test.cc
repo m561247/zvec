@@ -17,7 +17,7 @@
 #include <ailego/algorithm/kmeans.h>
 #include <ailego/container/params.h>
 #include <gtest/gtest.h>
-#include "framework/index_framework.h"
+#include "zvec/core/framework/index_framework.h"
 
 using namespace zvec::core;
 using namespace zvec::ailego;

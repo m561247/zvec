@@ -17,10 +17,10 @@
 #include <ailego/logger/logger.h>
 #include <zvec/ailego/pattern/expected.hpp>
 #include <zvec/ailego/utility/string_helper.h>
+#include <zvec/core/framework/index_meta.h>
 #include <zvec/db/config.h>
 #include <zvec/db/status.h>
 #include <zvec/db/type.h>
-#include "core/framework/index_meta.h"
 #include "db/common/constants.h"
 #include "db/common/error_code.h"
 #include "db/index/common/type_helper.h"

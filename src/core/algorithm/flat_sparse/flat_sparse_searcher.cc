@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "flat_sparse_searcher.h"
-#include <framework/index_error.h>
+#include <zvec/core/framework/index_error.h>
 #include <utility/sparse_utility.h>
 #include "flat_sparse_context.h"
 #include "flat_sparse_provider.h"
