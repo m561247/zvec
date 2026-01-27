@@ -24,7 +24,7 @@ float g_recall_precision;
 //--------------------------------------------------
 enum RetrievalMode { RM_UNDEFINED = 0, RM_DENSE = 1, RM_SPARSE = 2 };
 
-enum FilterMode { FM_UNDEFINED = 0, FM_NONE = 1, FM_TAG = 2 };
+enum FilterMode { FM_UNDEFINED = 0, FM_NONE = 1, FM_TAG = 2, FM_ACORN = 3};
 
 template <typename T>
 class Recall {
@@ -328,7 +328,7 @@ class Recall {
 
         FilterResultCache filter_cache;
         std::shared_ptr<IndexFilter> filter_ptr = nullptr;
-        if (filter_mode_ == FM_TAG) {
+        if (filter_mode_ == FM_TAG || filter_mode_ == FM_ACORN) {
           if (batch_taglists_[i].size() != 1) {
             cerr << "query tag list not equal to one!" << endl;
             return;
@@ -347,6 +347,10 @@ class Recall {
 
           filter_ptr = std::make_shared<IndexFilter>();
           filter_ptr->set(filterFunc);
+
+          if (filter_mode_ == FM_ACORN){
+            filter_ptr->set_advanced_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+          }
         }
 
         core_interface::DenseVector dense_query;
@@ -605,7 +609,7 @@ class Recall {
     // prefilter
     FilterResultCache filter_cache;
     std::shared_ptr<IndexFilter> filter_ptr = nullptr;
-    if (filter_mode_ == FM_TAG) {
+    if (filter_mode_ == FM_TAG || filter_mode_ == FM_ACORN) {
       if (batch_taglists_[idx].size() != 1) {
         cerr << "query tag list not equal to one!" << endl;
         return;
@@ -622,6 +626,10 @@ class Recall {
 
       filter_ptr = std::make_shared<core::IndexFilter>();
       filter_ptr->set(filterFunc);
+    
+      if (filter_mode_ == FM_ACORN){
+        filter_ptr->set_advanced_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+      }
     }
 
     core_interface::DenseVector dense_query;
@@ -986,7 +994,7 @@ class SparseRecall {
         // prefilter
         FilterResultCache filter_cache;
         std::shared_ptr<IndexFilter> filter_ptr = nullptr;
-        if (filter_mode_ == FM_TAG) {
+        if (filter_mode_ == FM_TAG || filter_mode_ == FM_ACORN) {
           if (batch_taglists_[i].size() != 1) {
             cerr << "query tag list not equal to one!" << endl;
             return;
@@ -1005,6 +1013,10 @@ class SparseRecall {
 
           filter_ptr = std::make_shared<IndexFilter>();
           filter_ptr->set(filterFunc);
+
+          if (filter_mode_ == FM_ACORN){
+            filter_ptr->set_advanced_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+          }    
         }
 
         core_interface::SparseVector sparse_query;
@@ -1329,6 +1341,10 @@ class SparseRecall {
 
       filter_ptr = std::make_shared<core::IndexFilter>();
       filter_ptr->set(filterFunc);
+          
+      if (filter_mode_ == FM_ACORN){
+        filter_ptr->set_advanced_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+      }    
     }
 
     core_interface::SparseVector sparse_query;
@@ -1737,6 +1753,9 @@ int main(int argc, char *argv[]) {
     std::string filter_mode_str = config_common["FilterMode"].as<string>();
     if (filter_mode_str == "tag") {
       filter_mode = FM_TAG;
+    }
+    else if (filter_mode_str == "acorn") {
+      filter_mode = FM_ACORN;
     }
   }
 

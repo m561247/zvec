@@ -1172,6 +1172,87 @@ TEST_F(HnswStreamerTest, TestFilter) {
   ASSERT_EQ(98, results3[2].key());
 }
 
+TEST_F(HnswStreamerTest, TestFilterAcorn) {
+  IndexStreamer::Pointer streamer =
+      IndexFactory::CreateStreamer("HnswStreamer");
+  ASSERT_TRUE(streamer != nullptr);
+
+  ailego::Params params;
+  params.set(PARAM_HNSW_STREAMER_MAX_NEIGHBOR_COUNT, 10);
+  params.set(PARAM_HNSW_STREAMER_SCALING_FACTOR, 16);
+  params.set(PARAM_HNSW_STREAMER_EFCONSTRUCTION, 10);
+  params.set(PARAM_HNSW_STREAMER_EF, 1000);
+  params.set(PARAM_HNSW_STREAMER_BRUTE_FORCE_THRESHOLD, 1000U);
+  params.set(PARAM_HNSW_STREAMER_GET_VECTOR_ENABLE, true);
+  ASSERT_EQ(0, streamer->init(*index_meta_ptr_, params));
+  auto storage = IndexFactory::CreateStorage("MMapFileStorage");
+  ASSERT_NE(nullptr, storage);
+  ailego::Params stg_params;
+  ASSERT_EQ(0, storage->init(stg_params));
+  ASSERT_EQ(0, storage->open(dir_ + "TestFilterAcorn", true));
+  ASSERT_EQ(0, streamer->open(storage));
+
+
+  NumericalVector<float> vec(dim);
+  size_t cnt = 2000;
+  auto ctx = streamer->create_context();
+  ASSERT_TRUE(!!ctx);
+  ctx->set_topk(10U);
+  IndexQueryMeta qmeta(IndexMeta::DataType::DT_FP32, dim);
+  std::vector<std::vector<uint64_t>> p_keys;
+  p_keys.resize(1);
+  for (size_t i = 0; i < cnt; i++) {
+    for (size_t j = 0; j < dim; ++j) {
+      vec[j] = i;
+    }
+    streamer->add_impl(i, vec.data(), qmeta, ctx);
+    p_keys[0].push_back(i);
+  }
+
+  for (size_t j = 0; j < dim; ++j) {
+    vec[j] = 100.1;
+  }
+  ASSERT_EQ(0, streamer->search_impl(vec.data(), qmeta, ctx));
+  auto &results = ctx->result();
+  ASSERT_EQ(10, results.size());
+  ASSERT_EQ(100, results[0].key());
+  ASSERT_EQ(101, results[1].key());
+  ASSERT_EQ(99, results[2].key());
+
+  auto filterFunc = [](uint64_t key) {
+    if (key == 100UL || key == 101UL) {
+      return true;
+    }
+    return false;
+  };
+  ctx->set_filter(filterFunc, IndexFilter::AdvancedMode::FM_ACORN);
+
+  // after set filter
+  ASSERT_EQ(0, streamer->search_impl(vec.data(), qmeta, ctx));
+  auto &results1 = ctx->result();
+  ASSERT_EQ(10, results1.size());
+  ASSERT_EQ(99, results1[0].key());
+  ASSERT_EQ(102, results1[1].key());
+  ASSERT_EQ(98, results1[2].key());
+
+  // linear
+  ASSERT_EQ(0, streamer->search_bf_impl(vec.data(), qmeta, ctx));
+  auto &results2 = ctx->result();
+  ASSERT_EQ(10, results2.size());
+  ASSERT_EQ(99, results2[0].key());
+  ASSERT_EQ(102, results2[1].key());
+  ASSERT_EQ(98, results2[2].key());
+
+  // linear by p_keys
+  ASSERT_EQ(0,
+            streamer->search_bf_by_p_keys_impl(vec.data(), p_keys, qmeta, ctx));
+  auto &results3 = ctx->result();
+  ASSERT_EQ(10, results3.size());
+  ASSERT_EQ(99, results3[0].key());
+  ASSERT_EQ(102, results3[1].key());
+  ASSERT_EQ(98, results3[2].key());
+}
+
 TEST_F(HnswStreamerTest, TestMaxIndexSize) {
   IndexStreamer::Pointer streamer =
       IndexFactory::CreateStreamer("HnswStreamer");

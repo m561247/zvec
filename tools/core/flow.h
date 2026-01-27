@@ -126,6 +126,10 @@ class Flow {
       ctx_ ? ctx_->set_filter(func) : flow_ctx_->set_filter(func);
     }
 
+    void set_advanced_filter_mode(IndexFilter::AdvancedMode filter_mode) {
+      ctx_ ? ctx_->set_advanced_filter_mode(filter_mode) : flow_ctx_->set_advanced_filter_mode(filter_mode);
+    }
+
     const IndexDocumentList &result(void) const {
       return ctx_ ? ctx_->result() : flow_ctx_->result();
     }
@@ -402,6 +406,10 @@ class SparseFlow {
     template <typename T>
     void set_filter(T &&func) {
       ctx_ ? ctx_->set_filter(func) : flow_ctx_->set_filter(func);
+    }
+  
+    void set_advanced_filter_mode(IndexFilter::AdvancedMode filter_mode) {
+      ctx_ ? ctx_->set_advanced_filter_mode(filter_mode) : flow_ctx_->set_advanced_filter_mode(filter_mode);
     }
 
     void set_topk(uint32_t topk) {

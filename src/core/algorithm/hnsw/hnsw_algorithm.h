@@ -119,6 +119,7 @@ class HnswAlgorithm {
  private:
   static constexpr uint32_t kLockCnt{1U << 8};
   static constexpr uint32_t kLockMask{kLockCnt - 1U};
+  static constexpr uint32_t kMaxFilterHop{2};
 
   HnswEntity &entity_;
   mutable std::mt19937 mt_{};

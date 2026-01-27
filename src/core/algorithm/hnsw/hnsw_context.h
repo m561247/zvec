@@ -399,12 +399,20 @@ class HnswContext : public IndexContext {
     return max_scan;
   }
 
+  inline uint32_t max_scan_num() const {
+    return max_scan_num_;
+  }
+
   inline size_t get_scan_num() const {
     return dc_.compare_cnt();
   }
 
   inline uint64_t reach_scan_limit() const {
     return dc_.compare_cnt() >= max_scan_num_;
+  }
+
+  inline bool reach_scan_limit(uint32_t max_scan_num) const {
+    return dc_.compare_cnt() >= max_scan_num;
   }
 
   inline bool error() const {

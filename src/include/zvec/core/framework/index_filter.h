@@ -22,15 +22,21 @@ namespace core {
  */
 class IndexFilter {
  public:
+  /*! Advanced Mode
+   */
+  enum AdvancedMode { FM_UNDEFINED = 0, FM_ACORN = 1};
+
   //! Constructor
   IndexFilter(void) {}
 
   //! Constructor
-  IndexFilter(const IndexFilter &rhs) : filter_(rhs.filter_) {}
+  IndexFilter(const IndexFilter &rhs)
+      : filter_(rhs.filter_), advanced_mode_(rhs.advanced_mode_) {}
 
   //! Constructor
   IndexFilter(IndexFilter &&rhs)
-      : filter_(std::forward<decltype(filter_)>(rhs.filter_)) {}
+      : filter_(std::forward<decltype(filter_)>(rhs.filter_)),
+        advanced_mode_(rhs.advanced_mode_) {}
 
   //! Copy assignment operator
   IndexFilter &operator=(const IndexFilter &rhs) {
@@ -55,6 +61,22 @@ class IndexFilter {
     filter_ = std::forward<T>(func);
   }
 
+  //! Set the filter function
+  template <typename T>
+  void set(T &&func, IndexFilter::AdvancedMode advanced_mode) {
+    filter_ = std::forward<T>(func);
+    advanced_mode_ = advanced_mode;
+  }
+
+  void set_advanced_mode(IndexFilter::AdvancedMode advanced_mode) {
+    advanced_mode_ = advanced_mode;
+  }
+
+  //! advance mode
+  IndexFilter::AdvancedMode advanced_mode() const {
+    return advanced_mode_;
+  }
+
   //! Reset the filter function
   void reset(void) {
     filter_ = nullptr;
@@ -68,6 +90,7 @@ class IndexFilter {
  private:
   //! Members
   std::function<bool(uint64_t key)> filter_{};
+  IndexFilter::AdvancedMode advanced_mode_{FM_UNDEFINED};
 };
 
 }  // namespace core

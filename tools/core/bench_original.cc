@@ -56,7 +56,7 @@ static bool g_debug_mode = 0;
 //------------------------------------------------------------
 enum RetrievalMode { RM_UNDEFINED = 0, RM_DENSE = 1, RM_SPARSE = 2 };
 
-enum FilterMode { FM_UNDEFINED = 0, FM_NONE = 1, FM_TAG = 2 };
+enum FilterMode { FM_UNDEFINED = 0, FM_NONE = 1, FM_TAG = 2, FM_ACORN = 3};
 
 template <typename T>
 class Bench {
@@ -226,7 +226,7 @@ class Bench {
 
       // prefilter
       FilterResultCache filter_cache;
-      if (filter_mode_ == FM_TAG) {
+      if (filter_mode_ == FM_TAG || filter_mode_ == FM_ACORN) {
         if (batch_taglists_[idx].size() != 1) {
           cerr << "query tag list not equal to one!" << endl;
           return;
@@ -244,6 +244,10 @@ class Bench {
         auto filterFunc = [&](uint64_t key) { return filter_cache.find(key); };
 
         contexts_[thread_index]->set_filter(filterFunc);
+
+        if (filter_mode_ == FM_ACORN){
+          contexts_[thread_index]->set_advanced_filter_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+        } 
       }
 
       // Do knn_search
@@ -505,7 +509,7 @@ class SparseBench {
 
       // prefilter
       FilterResultCache filter_cache;
-      if (filter_mode_ == FM_TAG) {
+      if (filter_mode_ == FM_TAG || filter_mode_ == FM_ACORN) {
         if (batch_taglists_[idx].size() != 1) {
           cerr << "query tag list not equal to one!" << endl;
           return;
@@ -523,6 +527,9 @@ class SparseBench {
         auto filterFunc = [&](uint64_t key) { return filter_cache.find(key); };
 
         contexts_[thread_index]->set_filter(filterFunc);
+        if (filter_mode_ == FM_ACORN){
+          contexts_[thread_index]->set_advanced_filter_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+        } 
       }
 
       // Do knn_search
@@ -753,7 +760,7 @@ int bench(std::string &query_type, size_t thread_count, size_t batch_count,
           string &second_sep, size_t bench_secs, size_t iter_count,
           Flow &flower, string &index_dir, RetrievalMode retrieval_mode,
           FilterMode filter_mode) {
-  if (filter_mode == FM_TAG && batch_count > 1) {
+  if ((filter_mode == FM_TAG || filter_mode == FM_TAG) && batch_count > 1) {
     cerr << "filter mode can not be run in batch mode" << endl;
     return -1;
   }
@@ -816,7 +823,7 @@ int bench_sparse(std::string &query_type, size_t thread_count,
                  string &first_sep, string &second_sep, size_t bench_secs,
                  size_t iter_count, SparseFlow &flower, string &index_dir,
                  FilterMode filter_mode) {
-  if (filter_mode == FM_TAG && batch_count > 1) {
+  if ((filter_mode == FM_TAG || filter_mode == FM_TAG) && batch_count > 1) {
     cerr << "filter mode can not be run in batch mode" << endl;
     return -1;
   }
@@ -919,6 +926,9 @@ int main(int argc, char *argv[]) {
     std::string filter_mode_str = config_common["FilterMode"].as<string>();
     if (filter_mode_str == "tag") {
       filter_mode = FM_TAG;
+    }
+    else if (filter_mode_str == "acorn") {
+      filter_mode = FM_ACORN;
     }
   }
 

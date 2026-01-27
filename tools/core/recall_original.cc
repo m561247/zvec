@@ -64,7 +64,7 @@ float g_recall_precision;
 //--------------------------------------------------
 enum RetrievalMode { RM_UNDEFINED = 0, RM_DENSE = 1, RM_SPARSE = 2 };
 
-enum FilterMode { FM_UNDEFINED = 0, FM_NONE = 1, FM_TAG = 2 };
+enum FilterMode { FM_UNDEFINED = 0, FM_NONE = 1, FM_TAG = 2, FM_ACORN = 3};
 
 template <typename T>
 class Recall {
@@ -369,7 +369,7 @@ class Recall {
         }
 
         FilterResultCache filter_cache;
-        if (filter_mode_ == FM_TAG) {
+        if (filter_mode_ == FM_TAG || filter_mode_ == FM_ACORN) {
           if (batch_taglists_[i].size() != 1) {
             cerr << "query tag list not equal to one!" << endl;
             return;
@@ -389,6 +389,9 @@ class Recall {
           };
 
           context->set_filter(filterFunc);
+          if (filter_mode_ == FM_ACORN){
+            context->set_advanced_filter_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+          } 
         }
 
         context->set_topk(gt_count);
@@ -801,7 +804,7 @@ class Recall {
 
     // prefilter
     FilterResultCache filter_cache;
-    if (filter_mode_ == FM_TAG) {
+    if (filter_mode_ == FM_TAG || filter_mode_ == FM_ACORN) {
       if (batch_taglists_[index].size() != 1) {
         cerr << "query tag list not equal to one!" << endl;
         return;
@@ -819,6 +822,9 @@ class Recall {
       auto filterFunc = [&](uint64_t key) { return filter_cache.find(key); };
 
       knn_context->set_filter(filterFunc);
+      if (filter_mode_ == FM_ACORN){
+        knn_context->set_advanced_filter_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+      } 
     }
 
     if (call_batch_api_) {
@@ -1154,7 +1160,7 @@ class SparseRecall {
 
         // prefilter
         FilterResultCache filter_cache;
-        if (filter_mode_ == FM_TAG) {
+        if (filter_mode_ == FM_TAG || filter_mode_ == FM_ACORN) {
           if (batch_taglists_[i].size() != 1) {
             cerr << "query tag list not equal to one!" << endl;
             return;
@@ -1174,6 +1180,9 @@ class SparseRecall {
           };
 
           context->set_filter(filterFunc);
+          if (filter_mode_ == FM_ACORN){
+            context->set_advanced_filter_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+          } 
         }
 
         int ret =
@@ -1516,7 +1525,7 @@ class SparseRecall {
     };
 
     FilterResultCache filter_cache;
-    if (filter_mode_ == FM_TAG) {
+    if (filter_mode_ == FM_TAG || filter_mode_ == FM_ACORN) {
       if (batch_taglists_[index].size() != 1) {
         cerr << "query tag list not equal to one!" << endl;
         return;
@@ -1534,6 +1543,9 @@ class SparseRecall {
       auto filterFunc = [&](uint64_t key) { return filter_cache.find(key); };
 
       knn_context->set_filter(filterFunc);
+      if (filter_mode_ == FM_ACORN){
+        knn_context->set_advanced_filter_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+      } 
     }
 
     if (call_batch_api_) {
@@ -1931,6 +1943,9 @@ int main(int argc, char *argv[]) {
     std::string filter_mode_str = config_common["FilterMode"].as<string>();
     if (filter_mode_str == "tag") {
       filter_mode = FM_TAG;
+    }
+    else if (filter_mode_str == "acorn") {
+      filter_mode = FM_ACORN;
     }
   }
 

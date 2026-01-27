@@ -745,6 +745,115 @@ TEST_F(HnswSearcherTest, TestFilter) {
   ASSERT_EQ(8UL, linearByPKeysResult1[2].key());
 }
 
+TEST_F(HnswSearcherTest, TestFilterAcorn) {
+  IndexBuilder::Pointer builder = IndexFactory::CreateBuilder("HnswBuilder");
+  ASSERT_NE(builder, nullptr);
+  auto holder = make_shared<OnePassIndexHolder<IndexMeta::DataType::DT_FP32>>(dim);
+  size_t doc_cnt = 10000UL;
+  std::vector<std::vector<uint64_t>> p_keys;
+  p_keys.resize(1);
+  for (size_t i = 0; i < doc_cnt; i++) {
+    NumericalVector<float> vec(dim);
+    for (size_t j = 0; j < dim; ++j) {
+      vec[j] = i;
+    }
+    ASSERT_TRUE(holder->emplace(i, vec));
+    p_keys[0].push_back(i);
+  }
+  ailego::Params params;
+  params.set("proxima.hnsw.builder.thread_count", 3);
+  ASSERT_EQ(0, builder->init(*_index_meta_ptr, params));
+  ASSERT_EQ(0, builder->train(holder));
+  ASSERT_EQ(0, builder->build(holder));
+  auto dumper = IndexFactory::CreateDumper("FileDumper");
+  ASSERT_NE(dumper, nullptr);
+  string path = _dir + "/TestFilterAcorn";
+  ASSERT_EQ(0, dumper->create(path));
+  ASSERT_EQ(0, builder->dump(dumper));
+  ASSERT_EQ(0, dumper->close());
+
+  // test searcher
+  IndexSearcher::Pointer searcher =
+      IndexFactory::CreateSearcher("HnswSearcher");
+  ASSERT_TRUE(searcher != nullptr);
+  ailego::Params searcherParams;
+  searcherParams.set("proxima.hnsw.searcher.check_crc_enable", true);
+  searcherParams.set("proxima.hnsw.searcher.max_scan_ratio", 1.0f);
+  ASSERT_EQ(0, searcher->init(searcherParams));
+  auto container = IndexFactory::CreateContainer("FileContainer");
+  ASSERT_EQ(0, container->load(path));
+  ASSERT_EQ(0, searcher->load(container, aitheta2::IndexMeasure::Pointer()));
+  auto linearCtx = searcher->create_context();
+  auto linearByPKeysCtx = searcher->create_context();
+  auto knnCtx = searcher->create_context();
+  ASSERT_TRUE(!!linearCtx);
+  ASSERT_TRUE(!!linearByPKeysCtx);
+  ASSERT_TRUE(!!knnCtx);
+  NumericalVector<float> vec(dim);
+  for (size_t j = 0; j < dim; ++j) {
+    vec[j] = 10.1f;
+  }
+  IndexQueryMeta qmeta(IndexMeta::DataType::DT_FP32, dim);
+  size_t topk = 10;
+  linearCtx->set_topk(topk);
+  linearByPKeysCtx->set_topk(topk);
+  knnCtx->set_topk(topk);
+  ASSERT_EQ(0, searcher->search_impl(vec.data(), qmeta, knnCtx));
+  ASSERT_EQ(0, searcher->search_bf_impl(vec.data(), qmeta, linearCtx));
+  ASSERT_EQ(0, searcher->search_bf_by_p_keys_impl(vec.data(), p_keys, qmeta,
+                                                  linearByPKeysCtx));
+
+  auto filterFunc = [](uint64_t key) {
+    if (key == 10UL || key == 11UL) {
+      return true;
+    }
+    return false;
+  };
+  auto &knnResult = knnCtx->result();
+  ASSERT_EQ(topk, knnResult.size());
+  ASSERT_EQ(10UL, knnResult[0].key());
+  ASSERT_EQ(11UL, knnResult[1].key());
+  ASSERT_EQ(9UL, knnResult[2].key());
+
+  auto &linearResult = linearCtx->result();
+  ASSERT_EQ(topk, linearResult.size());
+  ASSERT_EQ(10UL, linearResult[0].key());
+  ASSERT_EQ(11UL, linearResult[1].key());
+  ASSERT_EQ(9UL, linearResult[2].key());
+
+  auto &linearByPKeysResult = linearByPKeysCtx->result();
+  ASSERT_EQ(topk, linearByPKeysResult.size());
+  ASSERT_EQ(10UL, linearByPKeysResult[0].key());
+  ASSERT_EQ(11UL, linearByPKeysResult[1].key());
+  ASSERT_EQ(9UL, linearByPKeysResult[2].key());
+
+  knnCtx->set_filter(filterFunc, aitheta2::IndexFilter::AdvancedMode::FM_ACORN);
+  ASSERT_EQ(0, searcher->search_impl(vec.data(), qmeta, knnCtx));
+  auto &knnResult1 = knnCtx->result();
+  ASSERT_EQ(topk, knnResult1.size());
+  ASSERT_EQ(9UL, knnResult1[0].key());
+  ASSERT_EQ(12UL, knnResult1[1].key());
+  ASSERT_EQ(8UL, knnResult1[2].key());
+
+  linearCtx->set_filter(filterFunc);
+  ASSERT_EQ(0, searcher->search_bf_impl(vec.data(), qmeta, linearCtx));
+  auto &linearResult1 = linearCtx->result();
+  ASSERT_EQ(topk, linearResult1.size());
+  ASSERT_EQ(9UL, linearResult1[0].key());
+  ASSERT_EQ(12UL, linearResult1[1].key());
+  ASSERT_EQ(8UL, linearResult1[2].key());
+
+  linearByPKeysCtx->set_filter(filterFunc);
+  ASSERT_EQ(0, searcher->search_bf_by_p_keys_impl(vec.data(), p_keys, qmeta,
+                                                  linearByPKeysCtx));
+  auto &linearByPKeysResult1 = linearByPKeysCtx->result();
+  ASSERT_EQ(topk, linearByPKeysResult1.size());
+  ASSERT_EQ(9UL, linearByPKeysResult1[0].key());
+  ASSERT_EQ(12UL, linearByPKeysResult1[1].key());
+  ASSERT_EQ(8UL, linearByPKeysResult1[2].key());
+}
+
+
 TEST_F(HnswSearcherTest, TestStreamerDump) {
   IndexStreamer::Pointer streamer =
       IndexFactory::CreateStreamer("HnswStreamer");

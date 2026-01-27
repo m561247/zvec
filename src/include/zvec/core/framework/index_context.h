@@ -185,7 +185,17 @@ class IndexContext {
   const IndexFilter &filter(void) const {
     return filter_;
   }
+  //! Retrieve filter advance mode
+  virtual IndexFilter::AdvancedMode advanced_filter_mode(void) const {
+    return filter_.advanced_mode();
+  }
 
+  //! Set filter advance mode
+  virtual void set_advanced_filter_mode(
+      IndexFilter::AdvancedMode advanced_mode) {
+    filter_.set_advanced_mode(advanced_mode);
+  }
+  
   //! Retrieve fetch vector
   virtual bool fetch_vector(void) const {
     return false;
@@ -200,6 +210,11 @@ class IndexContext {
     filter_.set(std::forward<T>(func));
   }
 
+  template <typename T>
+  void set_filter(T &&func, IndexFilter::AdvancedMode advance_mode) {
+    filter_.set(std::forward<T>(func), advance_mode);
+  }
+  
   //! Reset the filter of context
   void reset_filter(void) {
     filter_.reset();

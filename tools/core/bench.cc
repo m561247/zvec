@@ -22,7 +22,7 @@ static bool g_debug_mode = 0;
 //------------------------------------------------------------
 enum RetrievalMode { RM_UNDEFINED = 0, RM_DENSE = 1, RM_SPARSE = 2 };
 
-enum FilterMode { FM_UNDEFINED = 0, FM_NONE = 1, FM_TAG = 2 };
+enum FilterMode { FM_UNDEFINED = 0, FM_NONE = 1, FM_TAG = 2, FM_ACORN = 3 };
 
 template <typename T>
 class Bench {
@@ -193,7 +193,7 @@ class Bench {
       // prefilter
       FilterResultCache filter_cache;
       std::shared_ptr<IndexFilter> filter_ptr = nullptr;
-      if (filter_mode_ == FM_TAG) {
+      if (filter_mode_ == FM_TAG || filter_mode_ == FM_ACORN) {
         if (batch_taglists_[idx].size() != 1) {
           cerr << "query tag list not equal to one!" << endl;
           return;
@@ -210,6 +210,10 @@ class Bench {
 
         filter_ptr = std::make_shared<IndexFilter>();
         filter_ptr->set(filterFunc);
+
+        if (filter_mode_ == FM_ACORN){
+          filter_ptr->set_advanced_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+        } 
       }
 
       auto query_param = query_param_->Clone();
@@ -492,7 +496,7 @@ class SparseBench {
       // prefilter
       FilterResultCache filter_cache;
       std::shared_ptr<IndexFilter> filter_ptr = nullptr;
-      if (filter_mode_ == FM_TAG) {
+      if (filter_mode_ == FM_TAG || filter_mode_ == FM_ACORN) {
         if (batch_taglists_[idx].size() != 1) {
           cerr << "query tag list not equal to one!" << endl;
           return;
@@ -509,6 +513,10 @@ class SparseBench {
 
         filter_ptr = std::make_shared<IndexFilter>();
         filter_ptr->set(filterFunc);
+
+        if (filter_mode_ == FM_ACORN){
+          filter_ptr->set_advanced_mode(IndexFilter::AdvancedMode::FM_ACORN); 
+        } 
       }
 
       auto query_param = query_param_->Clone();
@@ -862,6 +870,9 @@ int main(int argc, char *argv[]) {
     std::string filter_mode_str = config_common["FilterMode"].as<string>();
     if (filter_mode_str == "tag") {
       filter_mode = FM_TAG;
+    }
+    else if (filter_mode_str == "acorn") {
+      filter_mode = FM_ACORN;
     }
   }
 

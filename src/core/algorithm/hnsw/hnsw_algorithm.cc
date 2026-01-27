@@ -21,7 +21,8 @@ namespace core {
 
 HnswAlgorithm::HnswAlgorithm(HnswEntity &entity)
     : entity_(entity),
-      mt_(std::chrono::system_clock::now().time_since_epoch().count()),
+      //mt_(std::chrono::system_clock::now().time_since_epoch().count()),
+      mt_(0),
       lock_pool_(kLockCnt) {}
 
 int HnswAlgorithm::cleanup() {
@@ -206,6 +207,9 @@ void HnswAlgorithm::search_neighbors(level_t level, node_id_t *entry_point,
   HnswDistCalculator &dc = ctx->dist_calculator();
   VisitFilter &visit = ctx->visit_filter();
   CandidateHeap &candidates = ctx->candidates();
+  bool advanced_filter_mode =
+      ctx->advanced_filter_mode() && ctx->filter().is_valid() && level == 0;
+
   std::function<bool(node_id_t)> filter = [](node_id_t) { return false; };
   if (ctx->filter().is_valid()) {
     filter = [&](node_id_t id) { return ctx->filter()(entity.get_key(id)); };
@@ -218,83 +222,218 @@ void HnswAlgorithm::search_neighbors(level_t level, node_id_t *entry_point,
     topk.emplace(*entry_point, *dist);
   }
 
-  candidates.emplace(*entry_point, *dist);
-  while (!candidates.empty() && !ctx->reach_scan_limit()) {
-    auto top = candidates.begin();
-    node_id_t main_node = top->first;
-    dist_t main_dist = top->second;
+  if (advanced_filter_mode) {
+    // acorn-1 algorithm refers to: https://arxiv.org/abs/2403.04871
+    // size_t max_scan_num = ctx->max_scan_num() * 2;
 
-    if (topk.full() && main_dist > topk[0].second) {
-      break;
-    }
+    candidates.emplace(*entry_point, *dist);
+    // while (!candidates.empty() && !ctx->reach_scan_limit(max_scan_num)) {
+    while (!candidates.empty() && !ctx->reach_scan_limit(ctx->max_scan_num())) {
+      auto top = candidates.begin();
+      node_id_t main_node = top->first;
+      dist_t main_dist = top->second;
 
-    candidates.pop();
-    const Neighbors neighbors = entity.get_neighbors(level, main_node);
-    ailego_prefetch(neighbors.data);
-    if (ailego_unlikely(ctx->debugging())) {
-      (*ctx->mutable_stats_get_neighbors())++;
-    }
+      if (topk.full() && main_dist > topk[0].second) {
+        break;
+      }
 
-    node_id_t neighbor_ids[neighbors.size()];
-    uint32_t size = 0;
-    for (uint32_t i = 0; i < neighbors.size(); ++i) {
-      node_id_t node = neighbors[i];
-      if (visit.visited(node)) {
-        if (ailego_unlikely(ctx->debugging())) {
-          (*ctx->mutable_stats_visit_dup_cnt())++;
+      candidates.pop();
+      const Neighbors neighbors = entity.get_neighbors(level, main_node);
+      if (ailego_unlikely(ctx->debugging())) {
+        (*ctx->mutable_stats_get_neighbors())++;
+      }
+
+      uint32_t size = 0;
+      node_id_t *neighbor_ids{nullptr};
+      std::vector<node_id_t> neighbor_ids_acorn;
+
+      // hop 1
+      for (uint32_t i = 0; i < neighbors.size(); ++i) {
+        node_id_t node = neighbors[i];
+        if (visit.visited(node)) {
+          if (ailego_unlikely(ctx->debugging())) {
+            (*ctx->mutable_stats_visit_dup_cnt())++;
+          }
+          continue;
         }
+        visit.set_visited(node);
+
+        if (!filter(node)) {
+          neighbor_ids_acorn.push_back(node);
+        }
+
+        // hop 2
+        const Neighbors neighbors_next = entity.get_neighbors(level, node);
+        if (ailego_unlikely(ctx->debugging())) {
+          (*ctx->mutable_stats_get_neighbors())++;
+        }
+
+        for (uint32_t j = 0; j < neighbors_next.size(); ++j) {
+          node_id_t node_next = neighbors_next[j];
+          if (visit.visited(node_next)) {
+            if (ailego_unlikely(ctx->debugging())) {
+              (*ctx->mutable_stats_visit_dup_cnt())++;
+            }
+            continue;
+          }
+          visit.set_visited(node_next);
+
+          if (!filter(node_next)) {
+            neighbor_ids_acorn.push_back(node_next);
+          }
+        }
+      }
+
+      size = neighbor_ids_acorn.size();
+      neighbor_ids = neighbor_ids_acorn.data();
+
+      if (size == 0) {
         continue;
       }
-      visit.set_visited(node);
-      neighbor_ids[size++] = node;
-    }
-    if (size == 0) {
-      continue;
-    }
 
-    std::vector<IndexStorage::MemoryBlock> neighbor_vec_blocks;
-    int ret = entity.get_vector(neighbor_ids, size, neighbor_vec_blocks);
-    if (ailego_unlikely(ctx->debugging())) {
-      (*ctx->mutable_stats_get_vector())++;
-    }
-    if (ailego_unlikely(ret != 0)) {
-      break;
-    }
+      std::vector<IndexStorage::MemoryBlock> neighbor_vec_blocks;
+      size_t fetch_vector_batch_size = entity.neighbor_cnt(level);
+      size_t batch =
+          (size + fetch_vector_batch_size - 1) / fetch_vector_batch_size;
 
-    // do prefetch
-    static constexpr node_id_t BATCH_SIZE = 12;
-    static constexpr node_id_t PREFETCH_STEP = 2;
-    for (uint32_t i = 0; i < std::min(BATCH_SIZE * PREFETCH_STEP, size); ++i) {
-      ailego_prefetch(neighbor_vec_blocks[i].data());
-    }
-    // done
+      size_t offset = 0;
+      for (size_t i = 0; i < batch; ++i) {
+        size_t fetch_size = (i == batch - 1)
+                                ? (size - i * fetch_vector_batch_size)
+                                : fetch_vector_batch_size;
 
-    float dists[size];
-    const void *neighbor_vecs[size];
+        node_id_t *neighbor_ids_temp = neighbor_ids + offset;
 
-    for (uint32_t i = 0; i < size; ++i) {
-      neighbor_vecs[i] = neighbor_vec_blocks[i].data();
-    }
-
-    dc.batch_dist(neighbor_vecs, size, dists);
-
-    for (uint32_t i = 0; i < size; ++i) {
-      node_id_t node = neighbor_ids[i];
-      dist_t cur_dist = dists[i];
-
-      if ((!topk.full()) || cur_dist < topk[0].second) {
-        candidates.emplace(node, cur_dist);
-        // update entry_point for next level scan
-        if (cur_dist < *dist) {
-          *entry_point = node;
-          *dist = cur_dist;
+        std::vector<IndexStorage::MemoryBlock> neighbor_vecs_temp(fetch_size);
+        int ret = entity.get_vector(neighbor_ids_temp, fetch_size,
+                                    neighbor_vecs_temp);
+        if (ailego_unlikely(ctx->debugging())) {
+          (*ctx->mutable_stats_get_vector())++;
         }
-        if (!filter(node)) {
-          topk.emplace(node, cur_dist);
+
+        neighbor_vec_blocks.insert(neighbor_vec_blocks.end(), neighbor_vecs_temp.begin(), neighbor_vecs_temp.end());
+
+        offset += fetch_size;
+
+        if (ailego_unlikely(ret != 0)) {
+          break;
         }
-      }  // end if
-    }  // end for
-  }  // while
+      }
+
+      // do prefetch
+      static constexpr node_id_t BATCH_SIZE = 12;
+      static constexpr node_id_t PREFETCH_STEP = 2;
+      for (uint32_t i = 0; i < std::min(BATCH_SIZE * PREFETCH_STEP, size); ++i) {
+        ailego_prefetch(neighbor_vec_blocks[i].data());
+      }
+      // done
+
+      float dists[size];
+      const void *neighbor_vecs[size];
+
+      for (uint32_t i = 0; i < size; ++i) {
+        neighbor_vecs[i] = neighbor_vec_blocks[i].data();
+      }
+
+      dc.batch_dist(neighbor_vecs, size, dists);
+
+      for (uint32_t i = 0; i < size; ++i) {
+        node_id_t node = neighbor_ids[i];
+        dist_t cur_dist = dists[i];
+
+        if ((!topk.full()) || cur_dist < topk[0].second) {
+          candidates.emplace(node, cur_dist);
+          // update entry_point for next level scan
+          if (cur_dist < *dist) {
+            *entry_point = node;
+            *dist = cur_dist;
+          }
+          if (!filter(node)) {
+            std::cout << "node: " << node << ", dist: " << cur_dist << std::endl;
+            topk.emplace(node, cur_dist);
+          }
+        }  // end if
+      }  // end for
+    } // while
+  } else {
+    candidates.emplace(*entry_point, *dist);
+    while (!candidates.empty() && !ctx->reach_scan_limit()) {
+      auto top = candidates.begin();
+      node_id_t main_node = top->first;
+      dist_t main_dist = top->second;
+
+      if (topk.full() && main_dist > topk[0].second) {
+        break;
+      }
+
+      candidates.pop();
+      const Neighbors neighbors = entity.get_neighbors(level, main_node);
+      ailego_prefetch(neighbors.data);
+      if (ailego_unlikely(ctx->debugging())) {
+        (*ctx->mutable_stats_get_neighbors())++;
+      }
+
+      node_id_t neighbor_ids[neighbors.size()];
+      uint32_t size = 0;
+      for (uint32_t i = 0; i < neighbors.size(); ++i) {
+        node_id_t node = neighbors[i];
+        if (visit.visited(node)) {
+          if (ailego_unlikely(ctx->debugging())) {
+            (*ctx->mutable_stats_visit_dup_cnt())++;
+          }
+          continue;
+        }
+        visit.set_visited(node);
+        neighbor_ids[size++] = node;
+      }
+      if (size == 0) {
+        continue;
+      }
+
+      std::vector<IndexStorage::MemoryBlock> neighbor_vec_blocks;
+      int ret = entity.get_vector(neighbor_ids, size, neighbor_vec_blocks);
+      if (ailego_unlikely(ctx->debugging())) {
+        (*ctx->mutable_stats_get_vector())++;
+      }
+      if (ailego_unlikely(ret != 0)) {
+        break;
+      }
+
+      // do prefetch
+      static constexpr node_id_t BATCH_SIZE = 12;
+      static constexpr node_id_t PREFETCH_STEP = 2;
+      for (uint32_t i = 0; i < std::min(BATCH_SIZE * PREFETCH_STEP, size); ++i) {
+        ailego_prefetch(neighbor_vec_blocks[i].data());
+      }
+      // done
+
+      float dists[size];
+      const void *neighbor_vecs[size];
+
+      for (uint32_t i = 0; i < size; ++i) {
+        neighbor_vecs[i] = neighbor_vec_blocks[i].data();
+      }
+
+      dc.batch_dist(neighbor_vecs, size, dists);
+
+      for (uint32_t i = 0; i < size; ++i) {
+        node_id_t node = neighbor_ids[i];
+        dist_t cur_dist = dists[i];
+
+        if ((!topk.full()) || cur_dist < topk[0].second) {
+          candidates.emplace(node, cur_dist);
+          // update entry_point for next level scan
+          if (cur_dist < *dist) {
+            *entry_point = node;
+            *dist = cur_dist;
+          }
+          if (!filter(node)) {
+            topk.emplace(node, cur_dist);
+          }
+        }  // end if
+      }  // end for
+    }  // while
+  }
 
   return;
 }
@@ -330,6 +469,8 @@ void HnswAlgorithm::expand_neighbors_by_group(TopkHeap &topk,
     VisitFilter &visit = ctx->visit_filter();
     CandidateHeap &candidates = ctx->candidates();
     HnswDistCalculator &dc = ctx->dist_calculator();
+    bool advanced_filter_mode =
+        ctx->advanced_filter_mode() && ctx->filter().is_valid();
 
     std::function<bool(node_id_t)> filter = [](node_id_t) { return false; };
     if (ctx->filter().is_valid()) {
@@ -358,19 +499,77 @@ void HnswAlgorithm::expand_neighbors_by_group(TopkHeap &topk,
         (*ctx->mutable_stats_get_neighbors())++;
       }
 
-      node_id_t neighbor_ids[neighbors.size()];
       uint32_t size = 0;
-      for (uint32_t i = 0; i < neighbors.size(); ++i) {
-        node_id_t node = neighbors[i];
-        if (visit.visited(node)) {
-          if (ailego_unlikely(ctx->debugging())) {
-            (*ctx->mutable_stats_visit_dup_cnt())++;
+      node_id_t *neighbor_ids{nullptr};
+      node_id_t neighbor_ids_common[neighbors.size()];
+      std::vector<node_id_t> neighbor_ids_acorn;
+
+      if (!advanced_filter_mode) {
+        for (uint32_t i = 0; i < neighbors.size(); ++i) {
+          node_id_t node = neighbors[i];
+          if (visit.visited(node)) {
+            if (ailego_unlikely(ctx->debugging())) {
+              (*ctx->mutable_stats_visit_dup_cnt())++;
+            }
+            continue;
           }
-          continue;
+          visit.set_visited(node);
+          neighbor_ids_common[size++] = node;
         }
-        visit.set_visited(node);
-        neighbor_ids[size++] = node;
+
+        neighbor_ids = neighbor_ids_common;
+      
+      } else {
+        // acorn-1 algorithm refers to: https://arxiv.org/abs/2403.04871
+
+        // hop 0
+        for (uint32_t i = 0; i < neighbors.size(); ++i) {
+          node_id_t node = neighbors[i];
+          if (visit.visited(node)) {
+            if (ailego_unlikely(ctx->debugging())) {
+              (*ctx->mutable_stats_visit_dup_cnt())++;
+            }
+            continue;
+          }
+          visit.set_visited(node);
+
+          if (!filter(node)) {
+            neighbor_ids_acorn.push_back(node);
+          }
+        }
+
+        // hop 1
+        for (uint32_t i = 0; i < neighbors.size(); ++i) {
+          node_id_t node = neighbors[i];
+          if (visit.visited(node)) {
+            continue;
+          }
+
+          const Neighbors neighbors_next = entity.get_neighbors(0, node);
+          if (ailego_unlikely(ctx->debugging())) {
+            (*ctx->mutable_stats_get_neighbors())++;
+          }
+
+          for (uint32_t j = 0; j < neighbors_next.size(); ++j) {
+            node_id_t node_next = neighbors_next[j];
+            if (visit.visited(node_next)) {
+              if (ailego_unlikely(ctx->debugging())) {
+                (*ctx->mutable_stats_visit_dup_cnt())++;
+              }
+              continue;
+            }
+            visit.set_visited(node_next);
+
+            if (!filter(node_next)) {
+              neighbor_ids_acorn.push_back(node_next);
+            }
+          }
+        }
+
+        size = neighbor_ids_acorn.size();
+        neighbor_ids = neighbor_ids_acorn.data();
       }
+
       if (size == 0) {
         continue;
       }

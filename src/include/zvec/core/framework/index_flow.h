@@ -64,6 +64,12 @@ class IndexFlow {
       searcher_context_->reset_filter();
     }
 
+    //! Set filter advance mode
+    void set_advanced_filter_mode(
+        IndexFilter::AdvancedMode advanced_filter_mode) {
+      searcher_context_->set_advanced_filter_mode(advanced_filter_mode);
+    }
+
     //! Set mode of debug
     void set_debug_mode(bool enable) {
       searcher_context_->set_debug_mode(enable);
@@ -440,6 +446,12 @@ class IndexSparseFlow {
       searcher_context_->reset_filter();
     }
 
+    //! Set filter advance mode
+    void set_advanced_filter_mode(
+        IndexFilter::AdvancedMode advanced_filter_mode) {
+      searcher_context_->set_advanced_filter_mode(advanced_filter_mode);
+    }
+    
     //! Set mode of debug
     void set_debug_mode(bool enable) {
       searcher_context_->set_debug_mode(enable);
