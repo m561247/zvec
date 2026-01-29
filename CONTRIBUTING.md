@@ -13,7 +13,7 @@ By participating, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md
 
 ### Prerequisites
 - Python ≥ 3.9
-- CMake ≥ 3.15 (`cmake --version`)
+- CMake ≥ 3.25, < 4.0 (`cmake --version`)
 - A C++17-compatible compiler (e.g., `g++-11+`, `clang++`, Apple Clang on macOS)
 
 ### Clone & Initialize
