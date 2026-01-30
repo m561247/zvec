@@ -16,9 +16,9 @@
 </p>
 
 <p align="center">
-  <a href="https://zvec.org/en/docs/quickstart/">📚 <strong>Quick Start</strong> </a> |
-  <a href="https://zvec.org/en/">🌐 <strong>Website</strong> </a> |
-  <a href="https://zvec.org/en/docs/">📖 <strong>Documentation</strong> </a> |
+  <a href="https://zvec.org/en/docs/quickstart/">🚀 <strong>Quickstart</strong> </a> |
+  <a href="https://zvec.org/en/">🏠 <strong>Home</strong> </a> |
+  <a href="https://zvec.org/en/docs/">📚 <strong>Docs</strong> </a> |
   <a href="https://zvec.org/en/docs/benchmarks/">📊 <strong>Benchmarks</strong> </a> |
   <a href="https://discord.gg/rKddFBBu9z">💜 <strong>Discord</strong> </a>
 </p>
