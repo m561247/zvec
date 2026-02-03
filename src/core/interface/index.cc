@@ -601,7 +601,7 @@ int Index::_dense_search(const VectorData &vector_data,
   }
   // TODO: group by
   if (search_param->bf_pks != nullptr) {
-    // should we elimate the copy of bf_pks?
+    // should we eliminate the copy of bf_pks?
     if (streamer_->search_bf_by_p_keys_impl(
             vector, std::vector<std::vector<uint64_t>>{*search_param->bf_pks},
             new_meta, 1, context) != 0) {

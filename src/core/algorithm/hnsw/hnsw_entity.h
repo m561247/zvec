@@ -506,7 +506,7 @@ class HnswEntity {
   constexpr static uint32_t kDefaultMinScanLimit = 10000;
   constexpr static uint32_t kDefaultMaxScanLimit =
       std::numeric_limits<uint32_t>::max();
-  constexpr static float kDefaultBFNegativeProbility = 0.001f;
+  constexpr static float kDefaultBFNegativeProbability = 0.001f;
   constexpr static uint32_t kDefaultScalingFactor = 50U;
   constexpr static uint32_t kDefaultBruteForceThreshold = 1000U;
   constexpr static uint32_t kDefaultDocsHardLimit = 1 << 30U;  // 1 billion
