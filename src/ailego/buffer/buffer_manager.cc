@@ -20,7 +20,6 @@
 #include <zvec/ailego/buffer/buffer_manager.h>
 #include <zvec/ailego/internal/platform.h>
 #include <zvec/ailego/logger/logger.h>
-#include <zvec/ailego/buffer/buffer_pool.h>
 
 #ifdef __clang__
 #pragma clang diagnostic push
